@@ -1,0 +1,8 @@
+src/views/
+  ├── HomeView.vue
+  ├── class/
+  │   ├── ClassManagement.vue
+  │   └── StudentManagement.vue
+  └── system/
+      ├── DepartmentManagement.vue
+      └── EmployeeManagement.vue
