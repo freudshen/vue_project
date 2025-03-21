@@ -78,7 +78,15 @@ const getDeptList = async () => {
     }
   } catch (error) {
     console.error('获取部门列表错误:', error)
-    // 错误处理已经在请求拦截器中统一处理
+    if (error.code === 'ECONNABORTED') {
+      ElMessage.error('请求超时，请检查网络连接或联系管理员')
+    } else if (error.response) {
+      ElMessage.error(`请求失败: ${error.response.status}`)
+    } else if (error.request) {
+      ElMessage.error('未收到响应，请检查服务器状态')
+    } else {
+      ElMessage.error('请求出错，请稍后重试')
+    }
   } finally {
     loading.value = false
   }

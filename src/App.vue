@@ -3,9 +3,22 @@
     <!-- 顶部标题栏 -->
     <header class="header">
       <h1 class="title">智学云帆-教学管理系统</h1>
-      <div class="user-info">
-        <el-link type="primary" @click="handleLogout">退出登录【张三】</el-link>
-      </div>
+      <!-- 添加用户信息和退出按钮 -->
+    <div class="user-info">
+      <el-dropdown @command="handleCommand">
+        <span class="user-dropdown">
+          <el-avatar :size="32" :src="userInfo.avatar || defaultAvatar" />
+          <span class="username">{{ userInfo.name }}</span>
+          <el-icon><CaretBottom /></el-icon>
+        </span>
+        <template #dropdown>
+          <el-dropdown-menu>
+            <el-dropdown-item command="profile">个人信息</el-dropdown-item>
+            <el-dropdown-item command="logout" divided>退出登录</el-dropdown-item>
+          </el-dropdown-menu>
+        </template>
+      </el-dropdown>
+    </div>
     </header>
     
     <div class="main-container">
@@ -69,19 +82,42 @@ import {
   School, 
   UserFilled, 
   OfficeBuilding,
-  Management 
+  Management,
+  CaretBottom 
 } from '@element-plus/icons-vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
+import { ref } from 'vue'
+import { ElMessageBox } from 'element-plus'
 
 const route = useRoute()
+const router = useRouter()
 
-const handleLogout = () => {
-  // 处理退出登录逻辑
-  console.log('退出登录')
+// 用户信息
+const userInfo = ref(JSON.parse(localStorage.getItem('userInfo') || '{}'))
+const defaultAvatar = 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png'
+
+// 处理下拉菜单命令
+const handleCommand = (command) => {
+  if (command === 'logout') {
+    ElMessageBox.confirm('确认退出登录吗？', '提示', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    }).then(() => {
+      // 清除本地存储的用户信息和token
+      localStorage.removeItem('userInfo')
+      localStorage.removeItem('token')
+      // 跳转到登录页
+      router.push('/login')
+    })
+  } else if (command === 'profile') {
+    // 跳转到个人信息页面
+    router.push('/profile')
+  }
 }
 </script>
 
-<style>
+<style scoped>
 /* 全局重置样式 */
 * {
   margin: 0;
@@ -141,5 +177,23 @@ const handleLogout = () => {
   background-color: #f5f7fa;
   padding: 20px;
   overflow-y: auto;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+}
+
+.user-dropdown {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 0 8px;
+}
+
+.username {
+  margin: 0 8px;
+  font-size: 14px;
+  color: #606266;
 }
 </style>

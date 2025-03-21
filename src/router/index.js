@@ -5,6 +5,11 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
+      path: '/login',
+      name: 'login',
+      component: () => import('../views/login/LoginView.vue')
+    },
+    {
       path: '/',
       name: 'home',
       component: HomeView
@@ -30,6 +35,24 @@ const router = createRouter({
       component: () => import('../views/system/EmployeeManagement.vue')
     }
   ]
+})
+
+// 添加路由守卫
+router.beforeEach((to, from, next) => {
+  const token = localStorage.getItem('token')
+  if (to.path === '/login') {
+    if (token) {
+      next('/')
+    } else {
+      next()
+    }
+  } else {
+    if (token) {
+      next()
+    } else {
+      next('/login')
+    }
+  }
 })
 
 export default router
